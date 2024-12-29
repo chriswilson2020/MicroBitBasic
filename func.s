@@ -31,17 +31,19 @@ div_by_zero:
     movs r0, #0          // Return 0 if division by zero
     bx lr
     
- .global func_mod
+.global func_mod
 func_mod:
-    cbz r1, mod_by_zero        @ Check if divisor (r1) is zero
-    udiv r2, r0, r1            @ Divide r0 by r1, store quotient in r2
-    mul r2, r2, r1             @ Multiply quotient (r2) by divisor (r1)
-    subs r0, r0, r2            @ Subtract the product from r0 to get the remainder
-    bx lr                      @ Return
+    cmp r1, #0             @ Compare divisor (r1) with 0
+    beq mod_error          @ Branch to error if divisor is 0
+    udiv r2, r0, r1        @ Unsigned divide: r2 = r0 / r1
+    mul r3, r2, r1         @ Multiply quotient by divisor: r3 = (r0 / r1) * r1
+    subs r0, r0, r3        @ Subtract product from dividend: r0 = r0 - r3
+    bx lr                  @ Return
 
-mod_by_zero:
-    movs r0, #0                @ Return 0 for division by zero
+mod_error:
+    mov r0, #0             @ Return 0 if division by 0
     bx lr
+
 
 .global func_pow
 func_pow:

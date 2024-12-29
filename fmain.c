@@ -13,7 +13,6 @@
 #define TX USB_TX
 #define RX USB_RX
 
-
 int txinit;              /* UART ready to transmit first char */
 
 /* serial_init -- set up UART connection to host */

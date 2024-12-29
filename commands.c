@@ -1,6 +1,16 @@
 #include "commands.h"
 #include "lib.h"
 
+#define MAX_VARIABLES 26 // Variables A-Z
+
+typedef struct {
+    char name;
+    int value;
+    int is_set; // Flag to check if the variable is initialized
+} variable_t;
+
+static variable_t variables[MAX_VARIABLES];
+
 typedef int (*command_fn)(int, int);
 
 typedef struct {
@@ -22,6 +32,15 @@ extern int func_lt(int a, int b);
 extern int func_gte(int a, int b);
 extern int func_lte(int a, int b);
 
+void initialize_variables() {
+    for (int i = 0; i < MAX_VARIABLES; i++) {
+        variables[i].name = 'A' + i;
+        variables[i].value = 0;
+        variables[i].is_set = 0; // Mark as unset
+    }
+}
+
+
 // Wrapper for division to handle divide-by-zero
 int safe_div(int a, int b) {
     if (b == 0) {
@@ -31,13 +50,53 @@ int safe_div(int a, int b) {
     return func_div(a, b);
 }
 
+int safe_mod(int a, int b) {
+    // printf("DEBUG: safe_mod called with a = %d, b = %d\n", a, b);
+    if (b == 0) {
+        printf("Error: Division by zero in MOD operation\n");
+        return 0;
+    }
+    int result = func_mod(a, b);
+    // printf("DEBUG: func_mod result = %d\n", result);
+    return result;
+}
+
+
+void set_variable(char var_name, int value) {
+    if (var_name < 'A' || var_name > 'Z') {
+        printf("Error: Invalid variable name '%c'. Use A-Z.\n", var_name);
+        return;
+    }
+
+    int index = var_name - 'A';
+    variables[index].value = value;
+    variables[index].is_set = 1; // Mark as initialized
+    printf("%c = %d\n", var_name, value);
+}
+
+int get_variable(char var_name) {
+    if (var_name < 'A' || var_name > 'Z') {
+        printf("Error: Invalid variable name '%c'. Use A-Z.\n", var_name);
+        return 0;
+    }
+
+    int index = var_name - 'A';
+    if (!variables[index].is_set) {
+        printf("Error: Variable '%c' is not initialized.\n", var_name);
+        return 0;
+    }
+
+    return variables[index].value;
+}
+
+
 // Command lookup table
 static const command_entry commands[] = {
     {"ADD", func_add},
     {"SUB", func_sub},
     {"MUL", func_mul},
     {"DIV", safe_div}, // Use safe division
-    {"MOD", func_mod},
+    {"MOD", safe_mod},
     {"POW", func_pow},
     {"EQ", func_eq},
     {"NEQ", func_neq},
@@ -59,8 +118,8 @@ void execute_command(const char *cmd) {
         *op_ptr++ = *p++;
     }
     *op_ptr = '\0';
-    
-    // Check for HELP command
+
+    // Handle HELP command
     if (strcmp(op, "HELP") == 0) {
         printf("Supported commands:\n");
         printf("  ADD <a> <b>   : Add two numbers\n");
@@ -75,18 +134,55 @@ void execute_command(const char *cmd) {
         printf("  LT <a> <b>    : Check if the first number is less than the second\n");
         printf("  GTE <a> <b>   : Check if the first number is greater than or equal to the second\n");
         printf("  LTE <a> <b>   : Check if the first number is less than or equal to the second\n");
+        printf("  LET <var> <value> : Assign a value to a variable (A-Z)\n");
         printf("  HELP          : Show this help message\n");
+        return;
+    }
+
+    // Handle LET command
+    if (strcmp(op, "LET") == 0) {
+        while (*p == ' ') p++; // Skip spaces
+        char var_name = *p++;
+        if (var_name < 'A' || var_name > 'Z') {
+            printf("Error: Invalid variable name '%c'. Use A-Z.\n", var_name);
+            return;
+        }
+        while (*p == ' ') p++; // Skip spaces
+        int value = atoi(p);
+        set_variable(var_name, value);
+        return;
+    }
+
+    // Handle variable reference as command
+    if (op[0] >= 'A' && op[0] <= 'Z' && op[1] == '\0') {
+        result = get_variable(op[0]);
+        printf("%c = %d\n", op[0], result);
         return;
     }
 
     // Skip spaces
     while (*p == ' ') p++;
 
-    // Parse operands
-    a = atoi(p);
-    while (*p >= '0' && *p <= '9') p++;
-    while (*p == ' ') p++;
-    b = atoi(p);
+    // Parse the first operand
+    if (*p >= 'A' && *p <= 'Z') {
+        a = get_variable(*p++); // Get the value of the variable
+    } else {
+        a = atoi(p); // Parse as an integer
+        while (*p >= '0' && *p <= '9') p++;
+    }
+
+    while (*p == ' ') p++; // Skip spaces
+
+    // Parse the second operand
+    if (*p >= 'A' && *p <= 'Z') {
+        b = get_variable(*p++); // Get the value of the variable
+    } else {
+        b = atoi(p); // Parse as an integer
+        while (*p >= '0' && *p <= '9') p++;
+    }
+    
+    // printf("DEBUG: a = %d, b = %d\n", a, b);
+
 
     // Lookup command in the table
     for (int i = 0; commands[i].name != NULL; i++) {
@@ -100,4 +196,3 @@ void execute_command(const char *cmd) {
     // Command not found
     printf("Unknown command: %s\n", op);
 }
-
