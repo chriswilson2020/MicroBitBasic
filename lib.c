@@ -1,5 +1,6 @@
 /* lib.c */
 /* Copyright (c) 2018 J. M. Spivey */
+/* Modified by C. J. Wilson augmented with addition of strcmp */
 
 #include "lib.h"
 #include "hardware.h"

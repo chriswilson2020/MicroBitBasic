@@ -1,5 +1,6 @@
 /* lib.h */
 /* Copyright (c) 2018 J. M. Spivey */
+/* Modified by C. J. Wilson augmented with addition of strcmp */
 
 #include <stdarg.h>
 

@@ -1,5 +1,5 @@
-@ x02-instrs/func.s
-@ Copyright (c) 2018-20 J. M. Spivey
+@ x035-BASIC/func.s
+@ Copyright (c) 2024 - 25 C. J. Wilson
 
         .syntax unified
 

@@ -1,3 +1,6 @@
+/* commands.c */
+/* Copyright (c) 2025 C. J. Wilson */
+
 #include "commands.h"
 #include "lib.h"  // For atoi, strcmp, and printf
 #include "hardware.h" // If needed for other operations

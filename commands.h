@@ -1,3 +1,7 @@
+/* commands.h */
+/* Copyright (c) 2025 C. J. Wilson */
+
+
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
