@@ -102,6 +102,7 @@ This project is inspired by and builds upon the work in [baremetal-v2](https://g
 - Help system.
 
 ### Future Enhancements
+- Refactor if else into a command dispatcher
 - Variable assignment (`LET X = <value>`).
 - Input and output enhancements (`INPUT`, `PRINT`).
 - Control flow (`IF`, `GOTO`, `FOR`, `NEXT`).
