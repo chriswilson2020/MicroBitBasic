@@ -5,6 +5,6 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
-void execute_command(char *cmd);
+void execute_command(const char *cmd);
 
 #endif // COMMANDS_H
