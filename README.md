@@ -100,10 +100,10 @@ This project is inspired by and builds upon the work in [baremetal-v2](https://g
 - Arithmetic operations.
 - Comparison operators.
 - Help system.
-
-### Future Enhancements
 - Refactor if else into a command dispatcher
 - Variable assignment (`LET X = <value>`).
+
+### Future Enhancements
 - Input and output enhancements (`INPUT`, `PRINT`).
 - Control flow (`IF`, `GOTO`, `FOR`, `NEXT`).
 - String manipulation.
